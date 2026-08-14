@@ -11,6 +11,15 @@ const {
 
 const router = express();
 
+const logUpstreamError = (route, error) => {
+  console.error(`[samehadaku:${route}]`, {
+    message: error.message,
+    code: error.code,
+    status: error.response?.status,
+    url: error.config?.url,
+  });
+};
+
 router.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
@@ -19,6 +28,7 @@ router.get("/search", async (req, res) => {
       data: response,
     });
   } catch (error) {
+    logUpstreamError("search", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
@@ -31,6 +41,7 @@ router.get("/recomendation", async (req, res) => {
     const response = await recomendation();
     return res.json(response);
   } catch (error) {
+    logUpstreamError("recomendation", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
@@ -54,6 +65,7 @@ router.get("/ongoing", async (req, res) => {
       data: response,
     });
   } catch (error) {
+    logUpstreamError("ongoing", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
@@ -69,6 +81,7 @@ router.get("/latest", async (req, res) => {
 
     return res.json(response);
   } catch (error) {
+    logUpstreamError("latest", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
@@ -85,7 +98,7 @@ router.get("/info/:animeId", async (req, res) => {
       data: response,
     });
   } catch (error) {
-    console.log(error);
+    logUpstreamError("info", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
@@ -111,6 +124,7 @@ router.get("/watch/:serverName/:episodeId", async (req, res) => {
 
     return res.json(response);
   } catch (error) {
+    logUpstreamError("watch", error);
     return res.status(500).json({
       error: "Server Error",
       message: "Cant't fetch resources from server",
